@@ -17,7 +17,7 @@ if [ -f $ProvisionStateFile ]
 then
 	ProvisionState=`cat $ProvisionStateFile`
 else
-	ProvisionState=000
+	ProvisionState=0000
 	echo "$ProvisionState" > "$ProvisionStateFile"
 fi
 
@@ -28,19 +28,28 @@ fi
 
 #export ProvisionState
 
+echo "Last state: $ProvisionState"
+
 
 ################################
 # Execute provisioning scripts #
 ################################
 
-for f in $SharedFolder/scripts.d/*.sh
+set -e # break on errors!
+
+for f in $SharedFolder/vagrant/scripts/*.sh
 do
 	ScriptFile=$f
 	CurrentProvisionState=`basename $ScriptFile .sh`
-	if [ $ProvisionState -lt $CurrentProvisionState ];
+	if [ "$ProvisionState" \< "$CurrentProvisionState" ];
 	then
+	    echo "######## provision.sh EXECUTE: $f ########"
 		$f
 		ProvisionState=$CurrentProvisionState
 		echo "$ProvisionState" > "$ProvisionStateFile"
 	fi
 done
+
+ProvisionState=`cat $ProvisionStateFile`
+
+echo "### Provisioning finished successfully. ### New state: $ProvisionState"
