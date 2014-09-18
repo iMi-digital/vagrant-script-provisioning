@@ -37,7 +37,7 @@ echo "Last state: $ProvisionState"
 
 set -e # break on errors!
 
-for f in $SharedFolder/vagrant/scripts/*.sh
+for f in $SharedFolder/vagrant/provision.d/*.sh
 do
 	ScriptFile=$f
 	CurrentProvisionState=`basename $ScriptFile .sh`
